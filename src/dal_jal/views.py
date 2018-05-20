@@ -8,7 +8,7 @@ class JalQuerySetViewMixin(object):
     template_name_suffix = '_autocomplete'
 
     def get_result_html(self, result):
-        '''Return the HTML for an otion, used by the widget too.'''
+        '''Return the HTML for an option, used by the widget too.'''
         return '<span data-value="{}">{}</span>'.format(
             self.get_result_value(result),
             self.get_result_label(result),
