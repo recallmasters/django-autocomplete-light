@@ -91,6 +91,7 @@ if _installed('dal_jal'):
         JalSelect,
         JalSelectMultiple,
         JalWidgetMixin,
+        JalTextWidget
     )
 
     from dal_jal.views import JalQuerySetView
