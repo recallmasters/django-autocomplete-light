@@ -4,8 +4,7 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.core.urlresolvers import resolve
-from django.template.loader import render_to_string
-from django.utils import safestring
+from django.utils.encoding import force_text
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
@@ -19,7 +18,12 @@ except ImportError:
 from dal.widgets import WidgetMixin
 
 
-__all__ = ['JalWidgetMixin', 'JalChoiceWidget', 'JalMultipleChoiceWidget', 'JalTextWidget']
+__all__ = [
+    'JalWidgetMixin',
+    'JalChoiceWidget',
+    'JalMultipleChoiceWidget',
+    'JalTextWidget'
+]
 
 
 class JalWidgetMixin(object):
@@ -129,3 +133,64 @@ class JalSelectMultiple(JalWidgetMixin, WidgetMixin, forms.SelectMultiple):
             url=url,
             forward=forward
         )
+
+
+class JalTextWidget(JalWidgetMixin, WidgetMixin, forms.TextInput):
+
+    class Media:
+        css = {
+            'all': (
+                'autocomplete_light/vendor/jal/src/style.css',
+            ),
+        }
+        js = (
+            'autocomplete_light/jquery.init.js',
+            'autocomplete_light/autocomplete.init.js',
+            'autocomplete_light/vendor/jal/src/autocomplete.js',
+            'autocomplete_light/vendor/jal/src/widget.js',
+            'autocomplete_light/vendor/jal/src/text_widget.js',
+            'autocomplete_light/forward.js',
+            'autocomplete_light/jal.js',
+        )
+
+    def __init__(self, url=None, forward=None, attrs=None, *args,
+                 **kwargs):
+        forms.TextInput.__init__(self, *args, **kwargs)
+
+        WidgetMixin.__init__(
+            self,
+            url=url,
+            forward=forward
+        )
+
+        self.attrs.update(attrs)
+
+    def render(self, name, value, attrs=None):
+        """ Proxy Django's TextInput.render() """
+        html = '''
+            <input id="{id}" {attrs} type="text" name="{name}" value="{value}" />
+        '''.format(
+            id=attrs['id'],
+            name=name,
+            value=force_text(value),
+            attrs=flatatt(self.build_attrs(attrs)),
+        )
+
+        return mark_safe(html)
+
+    def build_attrs(self, *args, **kwargs):
+
+        attrs = {
+            'data-autocomplete-choice-selector': '[data-value]',
+            'data-widget-bootstrap': 'text',
+            'data-autocomplete-url': self.url,
+            'placeholder': '',
+        }
+
+        attrs.update(self.attrs)
+
+        if 'class' not in attrs.keys():
+            attrs['class'] = ''
+        attrs['class'] += ' autocomplete-light-text-widget autocomplete vTextField'
+
+        return attrs
