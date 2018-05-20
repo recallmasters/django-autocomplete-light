@@ -1,6 +1,6 @@
-from dal.views import BaseQuerySetView, ViewMixin
+from django.http import HttpResponse
 
-from django.views import generic
+from dal.views import BaseQuerySetView
 
 
 class JalQuerySetViewMixin(object):
@@ -18,7 +18,7 @@ class JalQuerySetViewMixin(object):
         q = self.request.GET.get('q', None)
         create_option = self.get_create_option(context, q)
 
-        return http.HttpResponse(''.join([
+        return HttpResponse(''.join([
             self.get_result_html(result)
             for result in self.get_results(context) + create_option
         ]))

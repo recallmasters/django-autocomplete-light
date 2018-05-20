@@ -50,7 +50,8 @@ class JalWidgetMixin(object):
         return import_string('.'.join((view_func.__module__, view_func.__name__)))
 
     def render(self, name, value, attrs=None):
-        import ipdb; ipdb.set_trace()
+        import ipdb
+        ipdb.set_trace()
         html = '''
         <span id="{id}-wrapper" {attrs}>
             <span id="{id}-deck" class="deck">
